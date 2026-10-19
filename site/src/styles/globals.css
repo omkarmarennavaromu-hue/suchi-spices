@@ -1,0 +1,403 @@
+@import 'tailwindcss';
+
+/* ============================================================
+   TYPEFACES — self-hosted so the build has no third-party
+   runtime dependency and no layout shift from swapping fonts.
+   Archivo is a variable grotesque (width 62–125, weight 100–900).
+   ============================================================ */
+
+@font-face {
+  font-family: 'Archivo';
+  src: url('/fonts/archivo-normal.woff2') format('woff2-variations');
+  font-weight: 100 900;
+  font-stretch: 62% 125%;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/inter-normal.woff2') format('woff2-variations');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Instrument Serif';
+  src: url('/fonts/instrument-serif-normal.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Instrument Serif';
+  src: url('/fonts/instrument-serif-italic.woff2') format('woff2');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* ============================================================
+   DESIGN TOKENS
+   ============================================================ */
+
+@theme {
+  --color-ink: #0b0607;
+  --color-ink-2: #140b0d;
+  --color-ink-3: #1d1013;
+  --color-burgundy: #4a0f15;
+  --color-burgundy-deep: #2b070c;
+  --color-scarlet: #e0352b;
+  --color-vermilion: #c1121f;
+  --color-saffron: #e9a11b;
+  --color-burnt: #b85c1e;
+  --color-ivory: #f3e8d8;
+  --color-ivory-2: #e6d8c4;
+  --color-gold: #c8a24a;
+  --color-coriander: #5e6b3f;
+
+  --font-display: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
+  --font-body: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  --font-serif: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --tracking-widest2: 0.34em;
+}
+
+/* ============================================================
+   BASE
+   ============================================================ */
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: auto; /* Lenis owns scrolling */
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--color-ink);
+    color: var(--color-ivory);
+    font-family: var(--font-body);
+    font-synthesis-weight: none;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: clip;
+  }
+
+  /* Lenis */
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+  .lenis.lenis-stopped {
+    overflow: hidden;
+  }
+
+  ::selection {
+    background: var(--color-scarlet);
+    color: var(--color-ivory);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  p {
+    margin: 0;
+    text-wrap: pretty;
+  }
+
+  img,
+  video {
+    display: block;
+    max-width: 100%;
+  }
+
+  button {
+    font: inherit;
+    color: inherit;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* ============================================================
+   COMPOSITION UTILITIES
+   ============================================================ */
+
+@utility shell {
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 4vw, 4.5rem);
+  max-width: 100rem;
+}
+
+@utility label {
+  font-family: var(--font-body);
+  font-size: 0.625rem;
+  font-weight: 500;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  line-height: 1.2;
+}
+
+@utility label-sm {
+  font-family: var(--font-body);
+  font-size: 0.5625rem;
+  font-weight: 500;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  line-height: 1.2;
+}
+
+@utility display {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-variation-settings: 'wdth' 104;
+  line-height: 0.86;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+@utility serif-accent {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+@layer components {
+  /* Masked line reveal — the child translates, the wrapper clips. */
+  .line-mask {
+    display: block;
+    overflow: hidden;
+    padding-bottom: 0.06em;
+    margin-bottom: -0.06em;
+  }
+
+  .hairline {
+    border-color: color-mix(in srgb, var(--color-ivory) 16%, transparent);
+  }
+
+  .hairline-dark {
+    border-color: color-mix(in srgb, var(--color-ink) 16%, transparent);
+  }
+
+  /* Film grain — a single fixed layer over the whole document. */
+  .grain::after {
+    content: '';
+    position: fixed;
+    inset: -50%;
+    z-index: 60;
+    pointer-events: none;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+    animation: grain-shift 7s steps(6) infinite;
+  }
+
+  @keyframes grain-shift {
+    0%,
+    100% {
+      transform: translate3d(0, 0, 0);
+    }
+    20% {
+      transform: translate3d(-3%, 2%, 0);
+    }
+    40% {
+      transform: translate3d(2%, -3%, 0);
+    }
+    60% {
+      transform: translate3d(-2%, -2%, 0);
+    }
+    80% {
+      transform: translate3d(3%, 1%, 0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .grain::after {
+      animation: none;
+    }
+  }
+
+  /* Underline that draws from the left on hover / focus. */
+  .link-line {
+    position: relative;
+    display: inline-block;
+  }
+  .link-line::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -0.35em;
+    height: 1px;
+    width: 100%;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.55s var(--ease-out-expo);
+  }
+  .link-line:hover::after,
+  .link-line:focus-visible::after,
+  .link-line[data-active='true']::after {
+    transform: scaleX(1);
+  }
+
+  .btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1.05rem 1.6rem;
+    font-size: 0.625rem;
+    font-weight: 600;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    line-height: 1;
+    border: 1px solid transparent;
+    overflow: hidden;
+    transition:
+      color 0.4s var(--ease-out-expo),
+      background-color 0.4s var(--ease-out-expo),
+      border-color 0.4s var(--ease-out-expo);
+  }
+
+  .btn-primary {
+    background: var(--color-saffron);
+    color: var(--color-ink);
+  }
+  .btn-primary:hover {
+    background: var(--color-ivory);
+  }
+
+  .btn-ghost {
+    border-color: color-mix(in srgb, var(--color-ivory) 32%, transparent);
+    color: var(--color-ivory);
+  }
+  .btn-ghost:hover {
+    border-color: var(--color-saffron);
+    color: var(--color-saffron);
+  }
+
+  .btn > svg {
+    transition: transform 0.4s var(--ease-out-expo);
+  }
+  .btn:hover > svg {
+    transform: translateX(3px);
+  }
+}
+
+@layer utilities {
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .edge-fade-x {
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      black 8%,
+      black 92%,
+      transparent
+    );
+  }
+}
+
+@layer components {
+  .marquee-track {
+    animation: marquee-slide 46s linear infinite;
+    will-change: transform;
+  }
+
+  @keyframes marquee-slide {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(-50%, 0, 0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .marquee-track {
+      animation: none;
+    }
+  }
+
+  /* Product card accent rule grows on hover / focus-within. */
+  .accent-rule {
+    transform-origin: left;
+    transition: transform 0.7s var(--ease-out-expo);
+  }
+  .group\/product:hover .accent-rule,
+  .group\/product:focus-within .accent-rule {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes cue {
+  0% {
+    transform: translateY(-100%);
+  }
+  55% {
+    transform: translateY(100%);
+  }
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+/* ============================================================
+   FOCUS — unlayered on purpose: rules inside `@layer base` lose
+   to Tailwind's utilities layer, which is why the outline was
+   inheriting currentColor instead of the saffron accent.
+   ============================================================ */
+
+a:focus-visible,
+button:focus-visible,
+[tabindex]:focus-visible,
+video:focus-visible {
+  outline: 2px solid #e9a11b;
+  outline-offset: 4px;
+  border-radius: 1px;
+}
+
+/* Comfortable hit areas for text-only controls (nav, footer) without
+   inflating the type. */
+.hit {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+}
+
+/* Native anchor fallback (works with JS disabled / middle-click). */
+section[id],
+main[id],
+footer[id] {
+  scroll-margin-top: 5.5rem;
+}
