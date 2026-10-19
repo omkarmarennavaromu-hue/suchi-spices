@@ -77,8 +77,8 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-16 flex flex-col gap-6 border-t border-ivory/12 pt-6 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-[0.6875rem] leading-relaxed text-ivory/35">
+        <div className="mt-16 flex flex-col gap-6 border-t border-ivory/12 pt-6 sm:flex-row sm:items-start sm:justify-between">
+          <p className="max-w-[62ch] text-[0.6875rem] leading-relaxed text-ivory/35">
             © {YEAR} Suchi Spices — a fictional brand. All packaging, copy and products
             shown are concept work created for a portfolio demonstration. Not a real
             store; nothing is for sale.
@@ -95,6 +95,30 @@ export function Footer() {
               className="transition-transform duration-400 group-hover:-translate-y-0.5"
             />
           </button>
+        </div>
+      </div>
+
+      {/* ── Signature watermark ──────────────────────────────────────────
+          Sits below the content column, full-bleed, so it reads as a credit
+          struck into the page rather than a badge stuck onto the layout. */}
+      <div className="mt-20 border-t border-ivory/10">
+        <div className="shell flex flex-col items-start gap-3 py-8 sm:flex-row sm:items-center sm:justify-between">
+          <p className="label-sm text-ivory/30">Built &amp; developed by</p>
+          <p className="font-display text-[clamp(1.15rem,2.4vw,1.6rem)] font-medium leading-none tracking-[-0.02em] text-ivory">
+            omkar<span className="text-saffron">_</span>.builds
+          </p>
+          <p className="label-sm text-ivory/25">Design · Code · Motion</p>
+        </div>
+
+        {/* Oversized echo, sized to fit the viewport so it is never clipped
+            mid-letter, and placed after the credit so nothing overlaps it. */}
+        <div className="relative h-[clamp(2.6rem,10vw,8.4rem)] overflow-hidden">
+          <p
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-0 top-0 select-none whitespace-nowrap text-center font-display text-[11vw] font-semibold leading-[0.78] tracking-[-0.055em] text-ivory/[0.05]"
+          >
+            omkar_.builds
+          </p>
         </div>
       </div>
     </footer>
