@@ -1,5 +1,5 @@
-import { conceptPrices } from '../src/data/pricing';
-import { readBody, readString, type ApiHandler } from './_http';
+import { conceptPrices } from '../src/data/pricing.ts';
+import { readBody, readString, type ApiHandler } from './_http.ts';
 
 /**
  * POST /api/create-order
