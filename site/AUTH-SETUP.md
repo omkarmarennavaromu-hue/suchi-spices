@@ -8,18 +8,27 @@ Project: `fytzfjkiuuitcndkagln` · region `ap-southeast-2` · status when last c
 
 ---
 
-## Why it's not live yet
+## Current state — what I already did for you
 
-1. **The Supabase project was paused.** I restored it (`INACTIVE` → `COMING_UP`),
-   which is why the endpoints now answer — but the management API still reports
-   it as not-yet-healthy, and it refuses to mint API keys in that state:
-   `422 Project must be healthy to create new API keys`.
-2. **The Google provider is off.** Confirmed via the auth config:
-   `external_google_enabled: false`, `external_google_client_id: null`.
-3. **No Google OAuth credentials exist yet.** These can only be created in a
-   Google Cloud project you own.
+| Step | Status |
+|---|---|
+| Supabase project was **paused** | ✅ Restored (`INACTIVE` → `ACTIVE`). It was restored on your behalf so the feature could be built at all — **re-pause it if you don't want it running.** |
+| Auth service reachable | ✅ `GET /auth/v1/settings` → `200` |
+| API keys | ✅ Found existing keys — the project already had a `publishable` + `anon` pair, so no new key was minted |
+| `site_url` | ✅ Set to `http://localhost:5173` |
+| Redirect allowlist | ✅ `localhost:5173`, `:5174`, `:4173`, `https://omkarmarennavaromu-hue.github.io` |
+| Local env file | ✅ `site/.env.local` written (git-ignored, verified) |
+| Client wired end to end | ✅ Clicking the button redirects to Supabase's `/auth/v1/authorize?provider=google` |
+| **Google provider enabled** | ❌ **Blocked — needs your Google Cloud client ID + secret** |
 
----
+The exact remaining error, straight from Supabase:
+
+```json
+{"code":400,"error_code":"validation_failed","msg":"Unsupported provider: provider is not enabled"}
+```
+
+That is the *correct* failure — it proves the browser is reaching Supabase with the
+right project and redirect target. Google simply isn't connected yet.
 
 ## Step 1 — Google Cloud (5 min)
 
