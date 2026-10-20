@@ -126,7 +126,7 @@ export function ProductModal({ product, onClose, reducedMotion }: ProductModalPr
               alt={`${product.name} concept packaging, photographed in a ${product.shortName.toLowerCase()}-toned studio setting.`}
               sizes="(min-width: 1024px) 40vw, 100vw"
               priority
-              className="aspect-[4/5] h-full w-full lg:aspect-auto lg:min-h-[34rem]"
+              className="aspect-[4/5] max-h-[30vh] w-full object-cover sm:max-h-[38vh] lg:aspect-auto lg:max-h-none lg:min-h-[34rem]"
             />
             <div
               className="pointer-events-none absolute inset-0 opacity-60"
@@ -155,6 +155,35 @@ export function ProductModal({ product, onClose, reducedMotion }: ProductModalPr
               {product.name}
             </h2>
 
+            <div
+              className="mt-6 border-y border-ivory/12 py-5 sm:mt-8 sm:py-7"
+              data-modal-stagger
+            >
+              {price && (
+                <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+                  <div>
+                    <p className="label-sm text-ivory/40">
+                      Concept price · {price.weight} pouch
+                    </p>
+                    <p className="display mt-2 text-[clamp(1.75rem,3vw,2.25rem)] text-ivory">
+                      {formatINR(price.paise)}
+                    </p>
+                  </div>
+                  <p className="label-sm border border-ivory/18 px-2.5 py-1 text-ivory/45">
+                    Razorpay test mode
+                  </p>
+                </div>
+              )}
+
+              <div className="mt-5">
+                <BuyButton
+                  productId={product.id}
+                  productName={product.name}
+                  accent={product.accent}
+                />
+              </div>
+            </div>
+
             <p
               className="serif-accent mt-5 text-[clamp(1.3rem,2vw,1.7rem)] leading-snug text-ivory/80"
               data-modal-stagger
@@ -165,6 +194,7 @@ export function ProductModal({ product, onClose, reducedMotion }: ProductModalPr
             <p className="mt-5 text-[0.9375rem] leading-[1.75] text-ivory/62" data-modal-stagger>
               {product.body}
             </p>
+
 
             <dl className="mt-9 border-t border-ivory/12" data-modal-stagger>
               {product.profile.map((row) => (
@@ -204,32 +234,6 @@ export function ProductModal({ product, onClose, reducedMotion }: ProductModalPr
               <p className="label-sm mt-3 text-ivory/30">
                 Campaign plate — {product.shortName.toLowerCase()}
               </p>
-            </div>
-
-            <div className="mt-9 border-t border-ivory/12 pt-6" data-modal-stagger>
-              {price && (
-              <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
-                <div>
-                  <p className="label-sm text-ivory/40">
-                    Concept price · {price.weight} pouch
-                  </p>
-                  <p className="display mt-2 text-[clamp(1.75rem,3vw,2.25rem)] text-ivory">
-                    {formatINR(price.paise)}
-                  </p>
-                </div>
-                <p className="label-sm border border-ivory/18 px-2.5 py-1 text-ivory/45">
-                  Razorpay test mode
-                </p>
-              </div>
-              )}
-
-              <div className="mt-5">
-                <BuyButton
-                  productId={product.id}
-                  productName={product.name}
-                  accent={product.accent}
-                />
-              </div>
             </div>
 
             <div
