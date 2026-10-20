@@ -3,6 +3,7 @@ import { gsap } from '../lib/gsap';
 import { Menu, X, ArrowUpRight } from 'lucide-react';
 import { scrollToSection, lockScroll } from '../hooks/useSmoothScroll';
 import { AccountChip } from './ui/AccountChip';
+import { CartButton } from './ui/CartButton';
 
 const LINKS = [
   { id: 'journey', label: 'Journey' },
@@ -152,6 +153,7 @@ export function Navigation() {
             <div className="hidden md:block">
               <AccountChip />
             </div>
+            <CartButton />
             <button
               type="button"
               onClick={() => setOpen((v) => !v)}
@@ -230,6 +232,7 @@ export function Navigation() {
             <div tabIndex={open ? 0 : -1}>
               <AccountChip variant="menu" />
             </div>
+            <CartButton variant="menu" tabIndex={open ? 0 : -1} />
             <a
               href="#collection"
               tabIndex={open ? 0 : -1}

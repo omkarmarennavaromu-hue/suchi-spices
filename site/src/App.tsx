@@ -1,5 +1,6 @@
 import { useReducedMotion } from './hooks/useReducedMotion';
 import { AuthProvider } from './auth/AuthProvider';
+import { CartProvider } from './shop/CartProvider';
 import { useSmoothScroll } from './hooks/useSmoothScroll';
 import { Navigation } from './components/Navigation';
 import { Hero } from './components/Hero';
@@ -12,6 +13,7 @@ import { CraftSection } from './components/CraftSection';
 import { BrandCampaign } from './components/BrandCampaign';
 import { FinalCTA } from './components/FinalCTA';
 import { Footer } from './components/Footer';
+import { CartDrawer } from './components/ui/CartDrawer';
 
 export default function App() {
   const reducedMotion = useReducedMotion();
@@ -21,6 +23,7 @@ export default function App() {
 
   return (
     <AuthProvider>
+      <CartProvider>
       <div className="grain relative min-h-screen bg-ink">
         <Navigation />
 
@@ -37,7 +40,9 @@ export default function App() {
         </main>
 
         <Footer />
+        <CartDrawer />
       </div>
+      </CartProvider>
     </AuthProvider>
   );
 }

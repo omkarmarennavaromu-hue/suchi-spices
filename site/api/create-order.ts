@@ -1,18 +1,71 @@
-import { conceptPrices } from '../src/data/pricing.ts';
-import { readBody, readString, type ApiHandler } from './_http.ts';
+import { conceptPrices } from '../src/data/pricing';
+import { readBody, readString, type ApiHandler } from './_http';
 
 /**
  * POST /api/create-order
  *
- * Body: { productId: string }
+ * Accepts either shape:
+ *   { productId: "garam-masala" }
+ *   { items: [{ productId: "garam-masala", quantity: 2 }, ...] }
  *
- * The browser sends a product id and nothing else. The amount comes from the
- * server's own price table, so a tampered request can only ever order a listed
- * product at its listed price — it cannot invent a ₹1 chilli pouch.
- *
- * Returns the order id plus the publishable key id, which is what Razorpay
- * Checkout needs to open. The key secret never leaves this function.
+ * Prices come from the server's own table and quantities are clamped, so a
+ * tampered request can only ever order listed products at their listed prices.
+ * Nothing the browser sends about money is used.
  */
+const MAX_QUANTITY = 10;
+const MAX_LINES = 10;
+
+interface ResolvedLine {
+  productId: string;
+  quantity: number;
+  paise: number;
+}
+
+function resolveLines(body: unknown): ResolvedLine[] | null {
+  const payload = readBody(body) as Record<string, unknown>;
+
+  // Single-product shape.
+  if (typeof payload.productId === 'string') {
+    const productId = readString(payload, 'productId');
+    const price = conceptPrices[productId];
+    if (!price) return null;
+    return [{ productId, quantity: 1, paise: price.paise }];
+  }
+
+  // Basket shape.
+  if (!Array.isArray(payload.items)) return null;
+
+  const seen = new Set<string>();
+  const lines: ResolvedLine[] = [];
+
+  for (const raw of payload.items.slice(0, MAX_LINES)) {
+    if (!raw || typeof raw !== 'object') continue;
+    const entry = raw as Record<string, unknown>;
+    if (typeof entry.productId !== 'string') continue;
+
+    const productId = entry.productId.trim();
+    const price = conceptPrices[productId];
+    if (!price || seen.has(productId)) continue;
+
+    const rawQty = typeof entry.quantity === 'number' ? entry.quantity : 1;
+    const quantity = Number.isFinite(rawQty)
+      ? Math.min(MAX_QUANTITY, Math.max(1, Math.floor(rawQty)))
+      : 1;
+
+    seen.add(productId);
+    lines.push({ productId, quantity, paise: price.paise });
+  }
+
+  if (!lines.length) return null;
+
+  // Razorpay requires a positive integer number of paise, so round off any
+  // stray float before it reaches them.
+  const total = lines.reduce((sum, line) => sum + line.quantity * line.paise, 0);
+  if (!Number.isInteger(total) || total < 100) return null;
+
+  return lines;
+}
+
 const handler: ApiHandler = async (req, res) => {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
@@ -31,13 +84,19 @@ const handler: ApiHandler = async (req, res) => {
     return;
   }
 
-  const productId = readString(readBody(req.body), 'productId');
-  const price = conceptPrices[productId];
+  const lines = resolveLines(req.body);
 
-  if (!price) {
+  if (!lines) {
     res.status(400).json({ error: 'unknown_product' });
     return;
   }
+
+  const amount = lines.reduce((sum, line) => sum + line.quantity * line.paise, 0);
+  const itemCount = lines.reduce((sum, line) => sum + line.quantity, 0);
+  const description =
+    lines.length === 1
+      ? conceptPrices[lines[0].productId]?.description ?? 'Suchi Spices concept product'
+      : `Suchi Spices · ${itemCount} pouch${itemCount === 1 ? '' : 'es'} (concept)`;
 
   const auth = Buffer.from(`${keyId}:${keySecret}`).toString('base64');
 
@@ -50,11 +109,14 @@ const handler: ApiHandler = async (req, res) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        amount: price.paise,
+        amount,
         currency: 'INR',
-        // Razorpay caps receipts at 40 chars and wants them unique-ish.
-        receipt: `suchi_${productId}_${Date.now().toString(36)}`.slice(0, 40),
-        notes: { productId, concept: 'suchi-spices demo' },
+        // Razorpay caps receipts at 40 chars.
+        receipt: `suchi_${itemCount}i_${Date.now().toString(36)}`.slice(0, 40),
+        notes: {
+          concept: 'suchi-spices demo',
+          lines: lines.map((l) => `${l.productId}x${l.quantity}`).join(',').slice(0, 240),
+        },
       }),
     });
   } catch {
@@ -77,10 +139,10 @@ const handler: ApiHandler = async (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   res.status(200).json({
     orderId: data.id,
-    amount: data.amount ?? price.paise,
+    amount: data.amount ?? amount,
     currency: data.currency ?? 'INR',
     keyId,
-    description: price.description,
+    description,
     testMode: keyId.startsWith('rzp_test_'),
   });
 };

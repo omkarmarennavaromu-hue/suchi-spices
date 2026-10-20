@@ -200,7 +200,7 @@ export function BuyButton({ productId, productName, accent }: BuyButtonProps) {
               ? 'Google sign-in is not configured in this build.'
               : undefined
         }
-        className={`btn btn-primary w-full justify-between sm:w-auto ${
+        className={`btn btn-ghost w-full justify-between whitespace-nowrap ${
           disabled ? 'cursor-not-allowed opacity-45' : ''
         }`}
       >

@@ -4,6 +4,8 @@ import { gsap } from '../lib/gsap';
 import { lockScroll } from '../hooks/useSmoothScroll';
 import { ResponsiveImage } from './ui/ResponsiveImage';
 import { BuyButton } from './ui/BuyButton';
+import { useCart } from '../shop/CartProvider';
+import { Check, Plus } from 'lucide-react';
 import { conceptPrices, formatINR } from '../data/pricing';
 import type { Product } from '../data/products';
 
@@ -19,6 +21,8 @@ export function ProductModal({ product, onClose, reducedMotion }: ProductModalPr
   const closeBtn = useRef<HTMLButtonElement | null>(null);
   const returnTo = useRef<HTMLElement | null>(null);
   const price = product ? conceptPrices[product.id] : undefined;
+  const { add, openCart, lastAdded, count } = useCart();
+  const justAdded = Boolean(product && lastAdded === product.id);
 
   /* open / close animation + body lock */
   useEffect(() => {
@@ -104,7 +108,7 @@ export function ProductModal({ product, onClose, reducedMotion }: ProductModalPr
         aria-labelledby="product-dialog-title"
         className="absolute inset-y-0 right-0 flex w-full max-w-[68rem] flex-col overflow-y-auto border-l border-ivory/12 bg-ink-2"
       >
-        <div className="sticky top-0 z-10 flex items-center justify-between gap-4 border-b border-ivory/10 bg-ink-2/95 px-5 py-4 backdrop-blur-sm md:px-8">
+        <div className="sticky top-0 z-20 flex items-center justify-between gap-4 border-b border-ivory/10 bg-ink-2 px-5 py-4 md:px-8">
           <p className="label-sm text-ivory/45">
             Concept product · {product.index} of 04
           </p>
@@ -126,7 +130,7 @@ export function ProductModal({ product, onClose, reducedMotion }: ProductModalPr
               alt={`${product.name} concept packaging, photographed in a ${product.shortName.toLowerCase()}-toned studio setting.`}
               sizes="(min-width: 1024px) 40vw, 100vw"
               priority
-              className="aspect-[4/5] max-h-[30vh] w-full object-cover sm:max-h-[38vh] lg:aspect-auto lg:max-h-none lg:min-h-[34rem]"
+              className="aspect-[4/5] max-h-[30vh] w-full object-cover sm:max-h-[38vh] lg:aspect-auto lg:h-full lg:max-h-none lg:min-h-[34rem]"
             />
             <div
               className="pointer-events-none absolute inset-0 opacity-60"
@@ -175,13 +179,45 @@ export function ProductModal({ product, onClose, reducedMotion }: ProductModalPr
                 </div>
               )}
 
-              <div className="mt-5">
-                <BuyButton
-                  productId={product.id}
-                  productName={product.name}
-                  accent={product.accent}
-                />
+              <div className="mt-5 flex flex-col gap-3">
+                <button
+                  type="button"
+                  onClick={() => add(product.id)}
+                  className="btn btn-primary w-full justify-between whitespace-nowrap"
+                >
+                  <span className="flex items-center gap-2">
+                    {justAdded ? (
+                      <Check size={13} strokeWidth={2} />
+                    ) : (
+                      <Plus size={13} strokeWidth={2} />
+                    )}
+                    {justAdded ? 'Added to basket' : 'Add to basket'}
+                  </span>
+                  <ArrowUpRight size={14} strokeWidth={1.6} />
+                </button>
+                <div>
+                  <BuyButton
+                    productId={product.id}
+                    productName={product.name}
+                    accent={product.accent}
+                  />
+                </div>
               </div>
+
+              {count > 0 && (
+                <div className="mt-3 flex items-center justify-between gap-4">
+                  <p className="label-sm text-ivory/40">
+                    {count} item{count === 1 ? '' : 's'} in basket
+                  </p>
+                  <button
+                    type="button"
+                    onClick={openCart}
+                    className="label-sm text-saffron underline underline-offset-4 transition-colors hover:text-ivory"
+                  >
+                    View basket
+                  </button>
+                </div>
+              )}
             </div>
 
             <p
