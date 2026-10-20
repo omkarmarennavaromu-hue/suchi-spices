@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { gsap } from '../lib/gsap';
 import { Menu, X, ArrowUpRight } from 'lucide-react';
 import { scrollToSection, lockScroll } from '../hooks/useSmoothScroll';
+import { AccountChip } from './ui/AccountChip';
 
 const LINKS = [
   { id: 'journey', label: 'Journey' },
@@ -148,17 +149,9 @@ export function Navigation() {
             <span className="hidden text-[0.5625rem] uppercase leading-none tracking-[0.34em] text-ivory/40 xl:block">
               Concept&nbsp;·&nbsp;Vol.&nbsp;01
             </span>
-            <a
-              href="#collection"
-              onClick={(e) => {
-                e.preventDefault();
-                go('collection');
-              }}
-              className="hidden items-center gap-2 border border-ivory/25 px-4 py-2.5 text-[0.5625rem] font-semibold uppercase tracking-[0.24em] text-ivory transition-colors duration-400 hover:border-saffron hover:text-saffron md:inline-flex"
-            >
-              Shop the range
-              <ArrowUpRight size={12} strokeWidth={1.5} />
-            </a>
+            <div className="hidden md:block">
+              <AccountChip />
+            </div>
             <button
               type="button"
               onClick={() => setOpen((v) => !v)}
@@ -234,6 +227,9 @@ export function Navigation() {
             <p className="serif-accent text-[1.35rem] leading-snug text-ivory/70">
               A universe of flavour, in four blends.
             </p>
+            <div tabIndex={open ? 0 : -1}>
+              <AccountChip variant="menu" />
+            </div>
             <a
               href="#collection"
               tabIndex={open ? 0 : -1}

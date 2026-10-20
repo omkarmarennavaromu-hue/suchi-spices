@@ -1,4 +1,5 @@
 import { useReducedMotion } from './hooks/useReducedMotion';
+import { AuthProvider } from './auth/AuthProvider';
 import { useSmoothScroll } from './hooks/useSmoothScroll';
 import { Navigation } from './components/Navigation';
 import { Hero } from './components/Hero';
@@ -19,22 +20,24 @@ export default function App() {
   useSmoothScroll(!reducedMotion);
 
   return (
-    <div className="grain relative min-h-screen bg-ink">
-      <Navigation />
+    <AuthProvider>
+      <div className="grain relative min-h-screen bg-ink">
+        <Navigation />
 
-      <main id="main">
-        <Hero reducedMotion={reducedMotion} />
-        <Manifesto reducedMotion={reducedMotion} />
-        <SpiceJourney reducedMotion={reducedMotion} />
-        <ProductCollection reducedMotion={reducedMotion} />
-        <FlavourInMotion reducedMotion={reducedMotion} />
-        <CookingStory reducedMotion={reducedMotion} />
-        <CraftSection reducedMotion={reducedMotion} />
-        <BrandCampaign reducedMotion={reducedMotion} />
-        <FinalCTA reducedMotion={reducedMotion} />
-      </main>
+        <main id="main">
+          <Hero reducedMotion={reducedMotion} />
+          <Manifesto reducedMotion={reducedMotion} />
+          <SpiceJourney reducedMotion={reducedMotion} />
+          <ProductCollection reducedMotion={reducedMotion} />
+          <FlavourInMotion reducedMotion={reducedMotion} />
+          <CookingStory reducedMotion={reducedMotion} />
+          <CraftSection reducedMotion={reducedMotion} />
+          <BrandCampaign reducedMotion={reducedMotion} />
+          <FinalCTA reducedMotion={reducedMotion} />
+        </main>
 
-      <Footer />
-    </div>
+        <Footer />
+      </div>
+    </AuthProvider>
   );
 }
