@@ -1,10 +1,11 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ArrowUpRight } from 'lucide-react';
 import { gsap, ScrollTrigger } from '../lib/gsap';
 import { useIsoLayoutEffect } from '../hooks/useIsoLayoutEffect';
 import { ResponsiveImage } from './ui/ResponsiveImage';
 import { SectionLabel } from './ui/SectionLabel';
 import { ProductModal } from './ProductModal';
+import { PENDING_PRODUCT_KEY } from './ui/BuyButton';
 import { products, type Product } from '../data/products';
 
 const PLACEMENT = [
@@ -21,6 +22,21 @@ interface ProductCollectionProps {
 export function ProductCollection({ reducedMotion }: ProductCollectionProps) {
   const root = useRef<HTMLElement | null>(null);
   const [selected, setSelected] = useState<Product | null>(null);
+
+  // If someone tapped "Sign in to buy" and came back from Google, put the same
+  // product modal back up rather than dumping them at the top of the page.
+  useEffect(() => {
+    let pending: string | null = null;
+    try {
+      pending = window.sessionStorage.getItem(PENDING_PRODUCT_KEY);
+      if (pending) window.sessionStorage.removeItem(PENDING_PRODUCT_KEY);
+    } catch {
+      return;
+    }
+    if (!pending) return;
+    const match = products.find((item) => item.id === pending);
+    if (match) setSelected(match);
+  }, []);
 
   useIsoLayoutEffect(() => {
     const el = root.current;

@@ -3,6 +3,8 @@ import { X, ArrowUpRight } from 'lucide-react';
 import { gsap } from '../lib/gsap';
 import { lockScroll } from '../hooks/useSmoothScroll';
 import { ResponsiveImage } from './ui/ResponsiveImage';
+import { BuyButton } from './ui/BuyButton';
+import { conceptPrices, formatINR } from '../data/pricing';
 import type { Product } from '../data/products';
 
 interface ProductModalProps {
@@ -16,6 +18,7 @@ export function ProductModal({ product, onClose, reducedMotion }: ProductModalPr
   const backdrop = useRef<HTMLDivElement | null>(null);
   const closeBtn = useRef<HTMLButtonElement | null>(null);
   const returnTo = useRef<HTMLElement | null>(null);
+  const price = product ? conceptPrices[product.id] : undefined;
 
   /* open / close animation + body lock */
   useEffect(() => {
@@ -203,13 +206,40 @@ export function ProductModal({ product, onClose, reducedMotion }: ProductModalPr
               </p>
             </div>
 
+            <div className="mt-9 border-t border-ivory/12 pt-6" data-modal-stagger>
+              {price && (
+              <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+                <div>
+                  <p className="label-sm text-ivory/40">
+                    Concept price · {price.weight} pouch
+                  </p>
+                  <p className="display mt-2 text-[clamp(1.75rem,3vw,2.25rem)] text-ivory">
+                    {formatINR(price.paise)}
+                  </p>
+                </div>
+                <p className="label-sm border border-ivory/18 px-2.5 py-1 text-ivory/45">
+                  Razorpay test mode
+                </p>
+              </div>
+              )}
+
+              <div className="mt-5">
+                <BuyButton
+                  productId={product.id}
+                  productName={product.name}
+                  accent={product.accent}
+                />
+              </div>
+            </div>
+
             <div
               className="mt-9 flex flex-col gap-4 border-t border-ivory/12 pt-6 sm:flex-row sm:items-center sm:justify-between"
               data-modal-stagger
             >
               <p className="max-w-[34ch] text-[0.6875rem] leading-relaxed text-ivory/40">
-                Fictional packaging and copy, created for a portfolio demonstration. Not
-                a real product, price or availability.
+                Fictional packaging, copy and pricing, created for a portfolio
+                demonstration. Payments run in Razorpay&rsquo;s test mode — no money
+                moves and nothing ships.
               </p>
               <button
                 type="button"
